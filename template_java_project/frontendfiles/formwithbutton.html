@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Log Expenditure</title>
+    <style>
+      /* Center header and form */
+      #header, #expenditure-form {
+        margin: 0 auto;
+        text-align: center;
+      }
+      
+      /* Styles for form fields */
+      label {
+        display: block;
+        margin: 10px 0;
+        font-weight: bold;
+      }
+      
+      input[type="text"] {
+        padding: 5px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        width: 300px;
+      }
+      
+      input[type="submit"], #networth-page-btn, #find-expenditure-page-btn {
+        background-color: #4CAF50;
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+      }
+      
+      input[type="submit"]:hover, #networth-page-btn:hover, #find-expenditure-page-btn {
+        background-color: #45a049;
+      }
+      
+      #networth-page-btn {
+        position: fixed;
+        bottom: 10px;
+        left: 10px;
+      }
+      #find-expenditure-page-btn{
+        position: fixed;
+        bottom: 10px;
+        right: 10px;
+    }
+    </style>
+  </head>
+  <body>
+    <div id="header">
+      <h1>Log Expenditure</h1>
+    </div>
+    <form id="expenditure-form">
+      <label for="purchaseName">Purchase Name:</label>
+      <input type="text" id="purchaseName" name="purchaseName" required>
+      <label for="time">Time (yyyy/mm/dd):</label>
+      <input type="text" id="time" name="time" pattern="\d{4}/\d{2}/\d{2}" required>
+      <label for="category">Category:</label>
+      <input type="text" id="category" name="category" required>
+      <label for="cost">Cost (numbers only):</label>
+      <input type="text" id="cost" name="cost" pattern="\d+" required>
+      <br><br>
+      <input type="submit" value="Submit">
+    </form>
+    <a href="https://personalincome.s3.amazonaws.com/income.html" id="networth-page-btn">Networth Page</a>
+    <a href="https://personalincome.s3.amazonaws.com/findexpenditurewithgets.html" id="find-expenditure-page-btn">Find Expenditure Page</a>
+    <script>
+      // Add event listener for form submission
+      document.getElementById('expenditure-form').addEventListener('submit', function(event) {
+        event.preventDefault(); // Prevent default form submission behavior
+        
+        // Get form data
+        const formData = new FormData(event.target);
+        
+        // Create JSON object from form data
+        const jsonObject = {};
+        formData.forEach((value, key) => {
+          jsonObject[key] = value;
+        });
+        const jsonBody = JSON.stringify(jsonObject);
+        console.log(jsonBody);
+        
+        // Make POST request to backend endpoint
+        fetch('https://q9g9qkaugj.execute-api.us-east-1.amazonaws.com/prod/expenditure', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: jsonBody
+        })
+        .then(response => {
+          // Handle successful response
+          console.log(response.json());
+          console.log('Expenditure logged successfully!');
+          // Clear form fields
+          event.target.reset();
+        })
+        .catch(error => {
+          // Handle error
+          console.error('Error logging expenditure:', error);
+        });
+      });
+    </script
+  </body>
+</html>
